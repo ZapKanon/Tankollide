@@ -20,7 +20,7 @@ public class Character : MonoBehaviour
     protected Rigidbody2D tankRigidbody;
     protected Canvas canvas;
     public Image healthOrb;
-    public Projectile projectile;
+    public StandardProjectile projectile;
 
     // Start is called before the first frame update
     public void Start()
@@ -47,7 +47,6 @@ public class Character : MonoBehaviour
     /// </summary>
     public void UpdateHealth()
     {
-        Debug.Log("HP");
         healthOrb.fillAmount = health / maxHealth;
 
         if (health <= 0)
@@ -64,10 +63,9 @@ public class Character : MonoBehaviour
         //Only fire if enough time has passed since last shot
         if (fireRateTimer <= 0)
         {
-            Projectile newProjectile = Instantiate(projectile, shotOriginPoint.transform.position, Quaternion.identity);
+            StandardProjectile newProjectile = Instantiate(projectile, shotOriginPoint.transform.position, Quaternion.identity);
             newProjectile.direction = transform.up;
             newProjectile.shotSpeed = shotSpeed;
-            newProjectile.damage = 10;
 
             fireRateTimer = fireRate;
         }

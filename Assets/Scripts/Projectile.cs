@@ -9,22 +9,20 @@ public class Projectile : MonoBehaviour
     public float shotSpeed;
     public float damage;
     public int team;
-    public bool collided;
+    public CollisionProjectile collisionProjectile;
+    private bool collided;
 
     // Start is called before the first frame update
-    void Start()
+    public virtual void Start()
     {
-        projectileRigidbody = GetComponent<Rigidbody2D>();
         collided = false;
+        projectileRigidbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!collided)
-        {
-            Move();
-        }
+        Move();
     }
 
     /// <summary>
@@ -32,7 +30,7 @@ public class Projectile : MonoBehaviour
     /// </summary>
     public void Move()
     {
-        projectileRigidbody.velocity = (shotSpeed * direction.normalized);
+        projectileRigidbody.velocity = (shotSpeed * direction);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -40,18 +38,52 @@ public class Projectile : MonoBehaviour
         //If colliding with a character
         if (collision.gameObject.TryGetComponent(out Character targetCharacter))
         {
-            //Only collide with characters on other teams
-            if (targetCharacter.team != team)
-            {
-                targetCharacter.health -= damage;
-                Destroy(gameObject);
-            }
+            CollisionWithCharacter(targetCharacter);
         }
         //If colliding with another projectile
-        else if (collision.gameObject.TryGetComponent(out Projectile targetProjectile))
+        else if (collision.gameObject.TryGetComponent(out StandardProjectile targetStandardProjectile))
         {
-            collided = true;
-            projectileRigidbody.velocity = Vector2.zero;
+            CollisionWithStandardProjectile(targetStandardProjectile);
         }
+        else if (collision.gameObject.TryGetComponent(out CollisionProjectile targetCollisionProjectile))
+        {
+            CollisionWithCollisionProjectile(targetCollisionProjectile);
+        }
+    }
+
+    public virtual void CollisionWithCharacter(Character targetCharacter)
+    {
+        //Only collide with characters on other teams
+        if (targetCharacter.team != team)
+        {
+            targetCharacter.health -= damage;
+
+            //Destroy this projectile
+            Destroy(gameObject);
+        }
+    }
+
+    public virtual void CollisionWithStandardProjectile(StandardProjectile targetProjectile)
+    {
+        if (!collided)
+        {
+            //Create a collision projectile, merging the parameters of the two existing projectiles
+            CollisionProjectile newCollision = Instantiate(collisionProjectile, Vector3.Lerp(transform.position, targetProjectile.transform.position, 0.5f), Quaternion.identity);
+            newCollision.direction = direction + targetProjectile.direction;
+            newCollision.shotSpeed = (shotSpeed + targetProjectile.shotSpeed) / 2;
+            newCollision.damage = damage + targetProjectile.damage;
+
+            targetProjectile.collided = true;
+            collided = true;
+        }
+
+        //Destroy both projectiles
+        Destroy(targetProjectile);
+        Destroy(gameObject);
+    }
+
+    public virtual void CollisionWithCollisionProjectile(CollisionProjectile targetProjectile)
+    {
+        
     }
 }
