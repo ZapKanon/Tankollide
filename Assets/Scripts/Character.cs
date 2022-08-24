@@ -20,6 +20,7 @@ public class Character : MonoBehaviour
     protected Rigidbody2D tankRigidbody;
     protected Canvas canvas;
     public Image healthOrb;
+    public Image shotRecharge;
     public StandardProjectile projectile;
 
     // Start is called before the first frame update
@@ -27,13 +28,17 @@ public class Character : MonoBehaviour
     {
         tankRigidbody = GetComponent<Rigidbody2D>();
         canvas = GetComponentInChildren<Canvas>();
+
+        //Able to fire a shot immediately after spawning
+        fireRateTimer = fireRate;
     }
 
     // Update is called once per frame
     protected void Update()
     {
         UpdateHealth();
-        fireRateTimer -= Time.deltaTime;
+        fireRateTimer += Time.deltaTime;
+        UpdateRecharge();
     }
 
     //Freeze canvas rotation to keep health orb filling from bottom to top
@@ -61,13 +66,13 @@ public class Character : MonoBehaviour
     public virtual void Shoot()
     {
         //Only fire if enough time has passed since last shot
-        if (fireRateTimer <= 0)
+        if (fireRateTimer >= fireRate)
         {
             StandardProjectile newProjectile = Instantiate(projectile, shotOriginPoint.transform.position, Quaternion.identity);
             newProjectile.direction = transform.up;
             newProjectile.shotSpeed = shotSpeed;
 
-            fireRateTimer = fireRate;
+            fireRateTimer = 0;
         }
     }
 
@@ -77,5 +82,13 @@ public class Character : MonoBehaviour
     public void Die()
     {
         Destroy(this.gameObject);
+    }
+
+    /// <summary>
+    /// Update the image displaying the length of time remaining until the character can fire another shot
+    /// </summary>
+    public void UpdateRecharge()
+    {
+        shotRecharge.fillAmount = fireRateTimer / fireRate;
     }
 }

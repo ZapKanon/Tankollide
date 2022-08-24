@@ -16,6 +16,12 @@ public class CollisionProjectile : Projectile
         initialScale = transform.localScale;
     }
 
+    public override void Update()
+    {
+        base.Update();
+        Pulse();
+    }
+
     public override void CollisionWithStandardProjectile(StandardProjectile targetProjectile)
     {
         //Increase the size of this projectile
@@ -30,6 +36,12 @@ public class CollisionProjectile : Projectile
     }
 
     public override void CollisionWithCollisionProjectile(CollisionProjectile targetProjectile)
+    {
+
+    }
+
+    //Change colors over time based on how much damage this collision projectile is capable of dealing
+    public void Pulse()
     {
 
     }
