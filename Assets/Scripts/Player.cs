@@ -5,14 +5,15 @@ using UnityEngine.UI;
 
 public class Player : Character
 {
-    private LineRenderer aimingLine;
+    public LineRenderer aimingLine;
+    private Camera mainCamera;
 
     // Start is called before the first frame update
     new void Start()
     {
         base.Start();
-        aimingLine = GetComponentInChildren<LineRenderer>();
         team = 0;
+        mainCamera = Camera.main;
     }
 
     // Update is called once per frame
@@ -21,6 +22,7 @@ public class Player : Character
         base.Update();
         PlayerInput();
         FaceCursor();
+        MoveCamera();
     }
 
     /// <summary>
@@ -56,7 +58,25 @@ public class Player : Character
             positionChange += Vector3.right;
         }
 
+        //TODO: Add gamepad input
+
         tankRigidbody.velocity = (moveSpeed * positionChange.normalized);
+
+        //Rotate jets to face the opposite direction of movement
+        //Hide jets if there is no movement
+        if (positionChange == Vector3.zero)
+        {
+            jetsPivot.SetActive(false);
+        }
+        else
+        {
+            jetsPivot.SetActive(true);
+
+            float dot = Vector3.up.x * positionChange.x + Vector3.up.y * positionChange.y;
+            float det = Vector3.up.x * positionChange.y - Vector3.up.y * positionChange.x;
+            float angle = Mathf.Rad2Deg * Mathf.Atan2(det, dot);
+            jetsPivot.transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
 
         if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0))
         {
@@ -101,5 +121,30 @@ public class Player : Character
         aimingLine.SetPositions(points);
 
         //TODO: Extend line past edge of screen
+
+        
+    }
+
+    /// <summary>
+    /// Set camera position between player's position and cursor position
+    /// </summary>
+    public void MoveCamera()
+    {
+        Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 midPoint = (transform.position + cursorPosition) / 2;
+        Vector3 newCameraPosition = (Vector2)midPoint - (Vector2)transform.position;
+        float maxDistanceX = 7;
+        float maxDistanceY = 3.5f;
+
+        //Clamp cursor position values to keep player onscreen at all times
+        newCameraPosition.x = Mathf.Clamp(newCameraPosition.x, -maxDistanceX, maxDistanceX);
+        newCameraPosition.y = Mathf.Clamp(newCameraPosition.y, -maxDistanceY, maxDistanceY);
+        midPoint = transform.position + newCameraPosition;
+
+        //Set camera position
+
+        //TODO: Reduce camera jitter with Lerping / MoveTowards
+        newCameraPosition = midPoint;
+        mainCamera.transform.position = new Vector3(newCameraPosition.x, newCameraPosition.y, -10);
     }
 }

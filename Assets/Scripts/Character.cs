@@ -17,6 +17,7 @@ public class Character : MonoBehaviour
     public int team;
 
     public GameObject shotOriginPoint;
+    public GameObject jetsPivot;
     protected Rigidbody2D tankRigidbody;
     protected Canvas canvas;
     public Image healthOrb;

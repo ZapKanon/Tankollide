@@ -49,6 +49,10 @@ public class Projectile : MonoBehaviour
         {
             CollisionWithCollisionProjectile(targetCollisionProjectile);
         }
+        else if (collision.gameObject.TryGetComponent(out Wall targetWall))
+        {
+            CollisionWithWall(targetWall);
+        }
     }
 
     public virtual void CollisionWithCharacter(Character targetCharacter)
@@ -85,5 +89,10 @@ public class Projectile : MonoBehaviour
     public virtual void CollisionWithCollisionProjectile(CollisionProjectile targetProjectile)
     {
         
+    }
+
+    public virtual void CollisionWithWall(Wall targetWall)
+    {
+        Destroy(gameObject);
     }
 }
