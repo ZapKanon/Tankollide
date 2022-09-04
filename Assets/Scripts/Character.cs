@@ -88,7 +88,7 @@ public class Character : MonoBehaviour
     /// <summary>
     /// Update the image displaying the length of time remaining until the character can fire another shot
     /// </summary>
-    public void UpdateRecharge()
+    public virtual void UpdateRecharge()
     {
         shotRecharge.fillAmount = fireRateTimer / fireRate;
     }

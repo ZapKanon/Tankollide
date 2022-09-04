@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public class Player : Character
 {
     public LineRenderer aimingLine;
+    public GameObject crosshair;
     private Camera mainCamera;
+    public Image crosshairFill;
 
     // Start is called before the first frame update
     new void Start()
@@ -66,16 +68,18 @@ public class Player : Character
         //Hide jets if there is no movement
         if (positionChange == Vector3.zero)
         {
-            jetsPivot.SetActive(false);
+            jetsPivot.transform.localScale = new Vector3(1, Mathf.Clamp(jetsPivot.transform.localScale.y - Time.deltaTime * 5, 0, 1), 1);          
         }
         else
         {
-            jetsPivot.SetActive(true);
+            jetsPivot.transform.localScale = new Vector3(1, Mathf.Clamp(jetsPivot.transform.localScale.y + Time.deltaTime * 20, 0, 1), 1);
 
             float dot = Vector3.up.x * positionChange.x + Vector3.up.y * positionChange.y;
             float det = Vector3.up.x * positionChange.y - Vector3.up.y * positionChange.x;
             float angle = Mathf.Rad2Deg * Mathf.Atan2(det, dot);
-            jetsPivot.transform.rotation = Quaternion.Euler(0, 0, angle);
+            jetsPivot.transform.rotation = Quaternion.Euler(0, 0, Mathf.LerpAngle(jetsPivot.transform.rotation.eulerAngles.z, angle, Time.deltaTime * 8));
+            Debug.Log("Am: " + jetsPivot.transform.rotation.eulerAngles.z);
+            Debug.Log("Go To: " + angle);
         }
 
         if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0))
@@ -120,9 +124,8 @@ public class Player : Character
 
         aimingLine.SetPositions(points);
 
-        //TODO: Extend line past edge of screen
-
-        
+        //Place crosshair at cursor position
+        crosshair.transform.position = cursorPosition;
     }
 
     /// <summary>
@@ -146,5 +149,11 @@ public class Player : Character
         //TODO: Reduce camera jitter with Lerping / MoveTowards
         newCameraPosition = midPoint;
         mainCamera.transform.position = new Vector3(newCameraPosition.x, newCameraPosition.y, -10);
+    }
+
+    public override void UpdateRecharge()
+    {
+        base.UpdateRecharge();
+        crosshairFill.fillAmount = 1 - fireRateTimer / fireRate;
     }
 }
