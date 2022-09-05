@@ -78,6 +78,14 @@ public class Character : MonoBehaviour
     }
 
     /// <summary>
+    /// Behavior when character takes damage from any source
+    /// </summary>
+    public virtual void TakeDamage(float damage)
+    {
+        health -= damage;
+    }
+
+    /// <summary>
     /// Character dies when health reaches 0
     /// </summary>
     public void Die()

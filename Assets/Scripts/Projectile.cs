@@ -10,7 +10,7 @@ public class Projectile : MonoBehaviour
     public float damage;
     public int team;
     public CollisionProjectile collisionProjectile;
-    private bool collided;
+    protected bool collided;
 
     // Start is called before the first frame update
     public virtual void Start()
@@ -60,7 +60,7 @@ public class Projectile : MonoBehaviour
         //Only collide with characters on other teams
         if (targetCharacter.team != team)
         {
-            targetCharacter.health -= damage;
+            targetCharacter.TakeDamage(damage);
 
             //Destroy this projectile
             Destroy(gameObject);

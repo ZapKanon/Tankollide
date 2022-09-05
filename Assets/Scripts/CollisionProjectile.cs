@@ -37,7 +37,20 @@ public class CollisionProjectile : Projectile
 
     public override void CollisionWithCollisionProjectile(CollisionProjectile targetProjectile)
     {
+        if (!collided)
+        {
+            shotsAbsorbed += targetProjectile.shotsAbsorbed;
+            transform.localScale = initialScale * (shotsAbsorbed / 2.0f);
+            damage = (damage + targetProjectile.damage) * collisionDamageMultiplier;
+            direction = direction + targetProjectile.direction;
+            shotSpeed += collisionSpeedIncrement;
 
+            targetProjectile.collided = true;
+            collided = true;
+
+            //Absorb (destroy) the standard projectile
+            Destroy(targetProjectile.gameObject);
+        }
     }
 
     //Change colors over time based on how much damage this collision projectile is capable of dealing

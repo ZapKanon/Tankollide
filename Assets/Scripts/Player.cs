@@ -9,6 +9,9 @@ public class Player : Character
     public GameObject crosshair;
     private Camera mainCamera;
     public Image crosshairFill;
+    private RaycastHit2D cursorHit;
+    private Vector3 crosshairRegularScale;
+    private Vector3 crosshairLargeScale;
 
     // Start is called before the first frame update
     new void Start()
@@ -16,6 +19,8 @@ public class Player : Character
         base.Start();
         team = 0;
         mainCamera = Camera.main;
+        crosshairRegularScale = crosshair.transform.localScale;
+        crosshairLargeScale = new Vector3(2.2f, 2.2f, 1);
     }
 
     // Update is called once per frame
@@ -25,6 +30,7 @@ public class Player : Character
         PlayerInput();
         FaceCursor();
         MoveCamera();
+        CursorRaycast();
     }
 
     /// <summary>
@@ -78,8 +84,6 @@ public class Player : Character
             float det = Vector3.up.x * positionChange.y - Vector3.up.y * positionChange.x;
             float angle = Mathf.Rad2Deg * Mathf.Atan2(det, dot);
             jetsPivot.transform.rotation = Quaternion.Euler(0, 0, Mathf.LerpAngle(jetsPivot.transform.rotation.eulerAngles.z, angle, Time.deltaTime * 8));
-            Debug.Log("Am: " + jetsPivot.transform.rotation.eulerAngles.z);
-            Debug.Log("Go To: " + angle);
         }
 
         if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0))
@@ -155,5 +159,40 @@ public class Player : Character
     {
         base.UpdateRecharge();
         crosshairFill.fillAmount = 1 - fireRateTimer / fireRate;
+    }
+
+    //Check if the cursor is colliding with any relevant objects
+    public void CursorRaycast()
+    {
+        //cursorRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        cursorHit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+        if (cursorHit.collider != null)
+        {
+            Debug.Log(cursorHit.collider.name);
+            //Enemy collider
+            if (cursorHit.collider.gameObject.TryGetComponent(out Enemy hoveredEnemy))
+            {
+                //Enlarge the crosshair when hovering over an enemy
+                crosshair.transform.localScale = Vector3.Lerp(crosshair.transform.localScale, crosshairLargeScale, Time.deltaTime * 10);
+            }
+            else
+        {
+            //Return the crosshair to normal size
+            crosshair.transform.localScale = Vector3.Lerp(crosshair.transform.localScale, crosshairRegularScale, Time.deltaTime * 10);
+            }
+        }
+        else
+        {
+            //Return the crosshair to normal size
+            crosshair.transform.localScale = Vector3.Lerp(crosshair.transform.localScale, crosshairRegularScale, Time.deltaTime * 10);
+        }
+    }
+
+    public override void TakeDamage(float damage)
+    {
+        base.TakeDamage(damage);
+        mainCamera.GetComponent<Shake>().TriggerShake(damage);
     }
 }
