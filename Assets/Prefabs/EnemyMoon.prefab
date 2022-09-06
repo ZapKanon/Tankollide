@@ -169,10 +169,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7298430532701380522}
-  - component: {fileID: 7298430532701380523}
+  - component: {fileID: 5475719280045918784}
   - component: {fileID: 7298430532701380521}
   - component: {fileID: 7298430532701380525}
   - component: {fileID: 7298430532701380524}
+  - component: {fileID: 1535701557842920414}
   m_Layer: 0
   m_Name: EnemyMoon
   m_TagString: Untagged
@@ -198,7 +199,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7298430532701380523
+--- !u!114 &5475719280045918784
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -207,11 +208,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7298430532701380520}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4adba92c2f84b12478c19d1a5a5f5fae, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a666488e73eaee469e38bc0ea39fca1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 5
-  runSpeed: 10
+  moveSpeed: 0
   rotateSpeed: 0
   health: 50
   maxHealth: 50
@@ -219,6 +219,7 @@ MonoBehaviour:
   shotSpeed: 7
   team: 1
   shotOriginPoint: {fileID: 7298430532465906959}
+  jetsPivot: {fileID: 0}
   healthOrb: {fileID: 7298430534218488640}
   shotRecharge: {fileID: 7298430534133534765}
   projectile: {fileID: 0}
@@ -276,6 +277,18 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.51}
   serializedVersion: 2
   m_Radius: 0.35
+--- !u!114 &1535701557842920414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7298430532701380520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b85ab911b450d4895a95a034328904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7298430533222276381
 GameObject:
   m_ObjectHideFlags: 0

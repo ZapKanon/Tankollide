@@ -5,8 +5,7 @@ using UnityEngine.UI;
 
 public class Character : MonoBehaviour
 {
-    public float walkSpeed;
-    public float runSpeed;
+    public float moveSpeed;
     public float rotateSpeed;
     public float health;
     public float maxHealth;

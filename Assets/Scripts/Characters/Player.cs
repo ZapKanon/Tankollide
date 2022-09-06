@@ -9,9 +9,11 @@ public class Player : Character
     public GameObject crosshair;
     private Camera mainCamera;
     public Image crosshairFill;
+    public Image crosshairLockOn;
     private RaycastHit2D cursorHit;
     private Vector3 crosshairRegularScale;
     private Vector3 crosshairLargeScale;
+    private Vector3 cursorPosition;
 
     // Start is called before the first frame update
     new void Start()
@@ -29,8 +31,18 @@ public class Player : Character
         base.Update();
         PlayerInput();
         FaceCursor();
+        DrawAimingLine();
+    }
+
+    private void FixedUpdate()
+    {  
         MoveCamera();
         CursorRaycast();
+    }
+
+    private void OnGUI()
+    {
+        crosshair.transform.position = cursorPosition;
     }
 
     /// <summary>
@@ -40,7 +52,7 @@ public class Player : Character
     private void PlayerInput()
     {
         Vector3 positionChange = new Vector3(0.0f, 0.0f, 0.0f);
-        float moveSpeed = walkSpeed;
+        float moveSpeed = base.moveSpeed;
 
         //Move forward
         if (Input.GetKey(KeyCode.W))
@@ -97,7 +109,7 @@ public class Player : Character
     /// </summary>
     public void FaceCursor()
     {
-        Vector3 cursorPosition = Input.mousePosition;
+        cursorPosition = Input.mousePosition;
         cursorPosition = Camera.main.ScreenToWorldPoint(cursorPosition);
         cursorPosition.z = 0;
 
@@ -109,14 +121,12 @@ public class Player : Character
         playerDirection = Mathf.Rad2Deg * playerDirection;
 
         tankRigidbody.rotation = playerDirection - 90;
-
-        DrawAimingLine(cursorPosition);
     }
 
     /// <summary>
     /// Draw a line from the player's tank to their cursor position
     /// </summary>
-    public void DrawAimingLine(Vector3 cursorPosition)
+    public void DrawAimingLine()
     {
         Vector3[] points = new Vector3[2];
 
@@ -127,9 +137,6 @@ public class Player : Character
         points[1] = cursorPosition;
 
         aimingLine.SetPositions(points);
-
-        //Place crosshair at cursor position
-        crosshair.transform.position = cursorPosition;
     }
 
     /// <summary>
@@ -153,6 +160,7 @@ public class Player : Character
         //TODO: Reduce camera jitter with Lerping / MoveTowards
         newCameraPosition = midPoint;
         mainCamera.transform.position = new Vector3(newCameraPosition.x, newCameraPosition.y, -10);
+        //mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, new Vector3(newCameraPosition.x, newCameraPosition.y, -10), Time.deltaTime * 15);
     }
 
     public override void UpdateRecharge()
@@ -171,28 +179,31 @@ public class Player : Character
         if (cursorHit.collider != null)
         {
             Debug.Log(cursorHit.collider.name);
-            //Enemy collider
-            if (cursorHit.collider.gameObject.TryGetComponent(out Enemy hoveredEnemy))
+            //Enemy or projectile collider
+            if (cursorHit.collider.gameObject.TryGetComponent(out Enemy hoveredEnemy) || (cursorHit.collider.gameObject.TryGetComponent(out Projectile hoveredProjectile) && hoveredProjectile.team != 0))
             {
-                //Enlarge the crosshair when hovering over an enemy
+                //Enlarge the crosshair when hovering over an enemy or projectile
                 crosshair.transform.localScale = Vector3.Lerp(crosshair.transform.localScale, crosshairLargeScale, Time.deltaTime * 10);
+                crosshairLockOn.enabled = true;
             }
             else
-        {
-            //Return the crosshair to normal size
-            crosshair.transform.localScale = Vector3.Lerp(crosshair.transform.localScale, crosshairRegularScale, Time.deltaTime * 10);
+            {
+                //Return the crosshair to normal size
+                crosshair.transform.localScale = Vector3.Lerp(crosshair.transform.localScale, crosshairRegularScale, Time.deltaTime * 10);
+                crosshairLockOn.enabled = false;
             }
         }
         else
         {
             //Return the crosshair to normal size
             crosshair.transform.localScale = Vector3.Lerp(crosshair.transform.localScale, crosshairRegularScale, Time.deltaTime * 10);
+            crosshairLockOn.enabled = false;
         }
     }
 
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
-        mainCamera.GetComponent<Shake>().TriggerShake(damage);
+        mainCamera.GetComponent<CameraShake>().TriggerShake(damage);
     }
 }
