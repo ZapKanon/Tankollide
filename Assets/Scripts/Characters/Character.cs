@@ -15,7 +15,7 @@ public class Character : MonoBehaviour
     protected float fireRateTimer;
     public int team;
 
-    public GameObject shotOriginPoint;
+    public ShotOrigin shotOriginPoint;
     public GameObject jetsPivot;
     protected Rigidbody2D tankRigidbody;
     protected Canvas canvas;
@@ -28,6 +28,9 @@ public class Character : MonoBehaviour
     {
         tankRigidbody = GetComponent<Rigidbody2D>();
         canvas = GetComponentInChildren<Canvas>();
+        shotOriginPoint = GetComponentInChildren<ShotOrigin>();
+        healthOrb = GetComponentInChildren<HealthOrb>().GetComponent<Image>();
+        shotRecharge = GetComponentInChildren<ShotRecharge>().GetComponent<Image>();
 
         //Able to fire a shot immediately after spawning
         fireRateTimer = fireRate;

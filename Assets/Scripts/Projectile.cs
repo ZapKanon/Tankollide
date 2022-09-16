@@ -35,8 +35,12 @@ public class Projectile : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.TryGetComponent(out Wall targetWall))
+        {
+            CollisionWithWall(targetWall);
+        }
         //If colliding with a character
-        if (collision.gameObject.TryGetComponent(out Character targetCharacter))
+        else if (collision.gameObject.TryGetComponent(out Character targetCharacter))
         {
             CollisionWithCharacter(targetCharacter);
         }
@@ -48,10 +52,6 @@ public class Projectile : MonoBehaviour
         else if (collision.gameObject.TryGetComponent(out CollisionProjectile targetCollisionProjectile))
         {
             CollisionWithCollisionProjectile(targetCollisionProjectile);
-        }
-        else if (collision.gameObject.TryGetComponent(out Wall targetWall))
-        {
-            CollisionWithWall(targetWall);
         }
     }
 

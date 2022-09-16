@@ -178,7 +178,7 @@ public class Player : Character
 
         if (cursorHit.collider != null)
         {
-            Debug.Log(cursorHit.collider.name);
+            //Debug.Log(cursorHit.collider.name);
             //Enemy or projectile collider
             if (cursorHit.collider.gameObject.TryGetComponent(out Enemy hoveredEnemy) || (cursorHit.collider.gameObject.TryGetComponent(out Projectile hoveredProjectile) && hoveredProjectile.team != 0))
             {
