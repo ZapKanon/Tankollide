@@ -74,6 +74,7 @@ public class Character : MonoBehaviour
             StandardProjectile newProjectile = Instantiate(projectile, shotOriginPoint.transform.position, Quaternion.identity);
             newProjectile.direction = transform.up;
             newProjectile.shotSpeed = shotSpeed;
+            newProjectile.team = team;
 
             fireRateTimer = 0;
         }
@@ -92,7 +93,7 @@ public class Character : MonoBehaviour
     /// </summary>
     public void Die()
     {
-        Destroy(this.gameObject);
+        gameObject.SetActive(false);
     }
 
     /// <summary>

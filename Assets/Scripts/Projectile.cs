@@ -69,21 +69,25 @@ public class Projectile : MonoBehaviour
 
     public virtual void CollisionWithStandardProjectile(StandardProjectile targetProjectile)
     {
-        if (!collided)
+        //Ignore collisions with projectiles on the same team
+        if (targetProjectile.team != team)
         {
-            //Create a collision projectile, merging the parameters of the two existing projectiles
-            CollisionProjectile newCollision = Instantiate(collisionProjectile, Vector3.Lerp(transform.position, targetProjectile.transform.position, 0.5f), Quaternion.identity);
-            newCollision.direction = direction + targetProjectile.direction;
-            newCollision.shotSpeed = (shotSpeed + targetProjectile.shotSpeed) / 2;
-            newCollision.damage = damage + targetProjectile.damage;
+            if (!collided)
+            {
+                //Create a collision projectile, merging the parameters of the two existing projectiles
+                CollisionProjectile newCollision = Instantiate(collisionProjectile, Vector3.Lerp(transform.position, targetProjectile.transform.position, 0.5f), Quaternion.identity);
+                newCollision.direction = direction + targetProjectile.direction;
+                newCollision.shotSpeed = (shotSpeed + targetProjectile.shotSpeed) / 2;
+                newCollision.damage = damage + targetProjectile.damage;
 
-            targetProjectile.collided = true;
-            collided = true;
+                targetProjectile.collided = true;
+                collided = true;
+            }
+
+            //Destroy both projectiles
+            Destroy(targetProjectile);
+            Destroy(gameObject);
         }
-
-        //Destroy both projectiles
-        Destroy(targetProjectile);
-        Destroy(gameObject);
     }
 
     public virtual void CollisionWithCollisionProjectile(CollisionProjectile targetProjectile)

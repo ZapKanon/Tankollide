@@ -15,6 +15,22 @@ public class Player : Character
     private Vector3 crosshairLargeScale;
     private Vector3 cursorPosition;
 
+    public Image leftFinFill;
+    public Image rightFinFill;
+
+    public float dashSpeed;
+    public float rapidFireRate;
+
+    public float dashRechargeRate;
+    public float rapidRechargeRate;
+    public float normalFireRate;
+    public float normalMoveSpeed;
+
+    protected float dashRateTimer = 3f;
+    protected float dashRateReset = 0.2f;
+    protected float rapidRateTimer = 3f;
+    protected float rapidRateReset = 1f;
+
     // Start is called before the first frame update
     new void Start()
     {
@@ -23,6 +39,8 @@ public class Player : Character
         mainCamera = Camera.main;
         crosshairRegularScale = crosshair.transform.localScale;
         crosshairLargeScale = new Vector3(2.2f, 2.2f, 1);
+        normalFireRate = fireRate;
+        normalMoveSpeed = moveSpeed;
     }
 
     // Update is called once per frame
@@ -32,6 +50,30 @@ public class Player : Character
         PlayerInput();
         FaceCursor();
         DrawAimingLine();
+
+        rapidRateTimer += Time.deltaTime;
+        dashRateTimer += Time.deltaTime;
+
+        leftFinFill.fillAmount = dashRateTimer / dashRechargeRate;
+        rightFinFill.fillAmount = rapidRateTimer / rapidRechargeRate;
+
+        if (leftFinFill.fillAmount >= 1)
+        {
+            leftFinFill.color = Color.cyan;
+        }
+        else
+        {
+            leftFinFill.color = Color.white;
+        }
+
+        if (rightFinFill.fillAmount >= 1)
+        {
+            rightFinFill.color = Color.cyan;
+        }
+        else
+        {
+            rightFinFill.color = Color.white;
+        }
     }
 
     private void FixedUpdate()
@@ -52,7 +94,21 @@ public class Player : Character
     private void PlayerInput()
     {
         Vector3 positionChange = new Vector3(0.0f, 0.0f, 0.0f);
-        float moveSpeed = base.moveSpeed;
+        //float moveSpeed = base.moveSpeed;
+
+        Debug.Log("Dash: " + dashRateTimer);
+
+        //Reset increased fire rate after a period of time
+        if (rapidRateTimer >= rapidRateReset)
+        {
+            fireRate = normalFireRate;
+        }
+
+        //Reset increased fire rate after a period of time
+        if (dashRateTimer >= dashRateReset)
+        {
+            moveSpeed = normalMoveSpeed;
+        }
 
         //Move forward
         if (Input.GetKey(KeyCode.W))
@@ -78,6 +134,30 @@ public class Player : Character
             positionChange += Vector3.right;
         }
 
+        //Dash
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            if (dashRateTimer >= dashRechargeRate)
+            {
+                moveSpeed = dashSpeed;
+                dashRateTimer = 0;
+            }
+        }
+
+        if(Input.GetMouseButton(1))
+        {
+            if (rapidRateTimer >= rapidRechargeRate)
+            {
+                fireRate = rapidFireRate;
+                rapidRateTimer = 0;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0))
+        {
+            Shoot();
+        }
+
         //TODO: Add gamepad input
 
         tankRigidbody.velocity = (moveSpeed * positionChange.normalized);
@@ -96,11 +176,6 @@ public class Player : Character
             float det = Vector3.up.x * positionChange.y - Vector3.up.y * positionChange.x;
             float angle = Mathf.Rad2Deg * Mathf.Atan2(det, dot);
             jetsPivot.transform.rotation = Quaternion.Euler(0, 0, Mathf.LerpAngle(jetsPivot.transform.rotation.eulerAngles.z, angle, Time.deltaTime * 8));
-        }
-
-        if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0))
-        {
-            Shoot();
         }
     }
 
