@@ -43,7 +43,7 @@ public class Room : MonoBehaviour
         //If the player is in this room, check if the room has been cleared
         if (active)
         {
-            if (IsCleared())
+            if (IsCleared() && !completed)
             {
                 Completed();
             }
@@ -114,8 +114,10 @@ public class Room : MonoBehaviour
             door.gameObject.SetActive(false);
         }
 
+        //Spawn a reward for completing the room
         if (reward != null)
         {
+            reward.transform.position = transform.position;
             reward.SetActive(true);
         }
     }

@@ -31,6 +31,9 @@ public class Player : Character
     protected float rapidRateTimer = 3f;
     protected float rapidRateReset = 1f;
 
+    private bool canDash;
+    private bool canRapidFire;
+
     // Start is called before the first frame update
     new void Start()
     {
@@ -41,6 +44,9 @@ public class Player : Character
         crosshairLargeScale = new Vector3(2.2f, 2.2f, 1);
         normalFireRate = fireRate;
         normalMoveSpeed = moveSpeed;
+
+        leftFinFill.gameObject.SetActive(false);
+        rightFinFill.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -54,25 +60,32 @@ public class Player : Character
         rapidRateTimer += Time.deltaTime;
         dashRateTimer += Time.deltaTime;
 
-        leftFinFill.fillAmount = dashRateTimer / dashRechargeRate;
-        rightFinFill.fillAmount = rapidRateTimer / rapidRechargeRate;
+        if (canDash)
+        {
+            leftFinFill.fillAmount = dashRateTimer / dashRechargeRate;
 
-        if (leftFinFill.fillAmount >= 1)
-        {
-            leftFinFill.color = Color.cyan;
-        }
-        else
-        {
-            leftFinFill.color = Color.white;
+            if (leftFinFill.fillAmount >= 1)
+            {
+                leftFinFill.color = Color.cyan;
+            }
+            else
+            {
+                leftFinFill.color = Color.white;
+            }
         }
 
-        if (rightFinFill.fillAmount >= 1)
+        if(canRapidFire)
         {
-            rightFinFill.color = Color.cyan;
-        }
-        else
-        {
-            rightFinFill.color = Color.white;
+            rightFinFill.fillAmount = rapidRateTimer / rapidRechargeRate;
+
+            if (rightFinFill.fillAmount >= 1)
+            {
+                rightFinFill.color = Color.cyan;
+            }
+            else
+            {
+                rightFinFill.color = Color.white;
+            }
         }
     }
 
@@ -95,8 +108,6 @@ public class Player : Character
     {
         Vector3 positionChange = new Vector3(0.0f, 0.0f, 0.0f);
         //float moveSpeed = base.moveSpeed;
-
-        Debug.Log("Dash: " + dashRateTimer);
 
         //Reset increased fire rate after a period of time
         if (rapidRateTimer >= rapidRateReset)
@@ -134,8 +145,8 @@ public class Player : Character
             positionChange += Vector3.right;
         }
 
-        //Dash
-        if (Input.GetKey(KeyCode.LeftShift))
+        //Dash if ability is enabled
+        if (Input.GetKey(KeyCode.LeftShift) && canDash)
         {
             if (dashRateTimer >= dashRechargeRate)
             {
@@ -144,7 +155,8 @@ public class Player : Character
             }
         }
 
-        if(Input.GetMouseButton(1))
+        //Rapidfire if ability is enabled
+        if(Input.GetMouseButton(1) && canRapidFire)
         {
             if (rapidRateTimer >= rapidRechargeRate)
             {
@@ -153,7 +165,7 @@ public class Player : Character
             }
         }
 
-        if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0))
+        if (Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0) || Input.GetMouseButton(1))
         {
             Shoot();
         }
@@ -280,5 +292,44 @@ public class Player : Character
     {
         base.TakeDamage(damage);
         mainCamera.GetComponent<CameraShake>().TriggerShake(damage);
+    }
+
+    //Change paramters when powerups are picked up
+    public void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.TryGetComponent(out Powerup powerup))
+        {
+            switch (powerup.ID)
+            {
+                //Passive - Quickens fire rate
+                case "FireRate":
+                    normalFireRate -= 0.5f;
+                    break;
+
+                //Passive - Increases maximum health
+                case "Health":
+                    maxHealth += 100;
+                    break;
+
+                //Active - Temporarily quickens fire rate signficantly
+                case "RapidFire":
+                    canRapidFire = true;
+                    rightFinFill.gameObject.SetActive(true);
+                    break;
+
+                //Active - Temporarily quickens movement speed significantly
+                case "Dash":
+                    canDash = true;
+                    leftFinFill.gameObject.SetActive(true);
+                    break;
+
+                default:
+                    Debug.Log("Invalid Powerup ID");
+                    break;
+            }
+
+            //Hide the powerup after obtaining
+            powerup.gameObject.SetActive(false);
+        }
     }
 }
