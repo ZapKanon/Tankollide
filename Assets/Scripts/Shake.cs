@@ -56,7 +56,7 @@ public class Shake : MonoBehaviour
     public void TriggerShake(float damageValue)
     {
         initialPosition = transform.localPosition;
-        shakeDuration = 0.05f + damageValue / 100f;
-        shakeMagnitude = 0.3f + damageValue / 100f;
+        shakeDuration = 0.025f + damageValue / 100f;
+        shakeMagnitude = 0.2f + damageValue / 100f;
     }
 }

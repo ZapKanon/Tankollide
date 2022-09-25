@@ -29,7 +29,7 @@ public class Player : Character
     protected float dashRateTimer = 3f;
     protected float dashRateReset = 0.2f;
     protected float rapidRateTimer = 3f;
-    protected float rapidRateReset = 1f;
+    protected float rapidRateReset = 0.5f;
 
     private bool canDash;
     private bool canRapidFire;
@@ -328,8 +328,12 @@ public class Player : Character
                     break;
             }
 
-            //Hide the powerup after obtaining
-            powerup.gameObject.SetActive(false);
+            //Hide the powerup after obtaining, while keeping text visible
+            powerup.GetComponent<SpriteRenderer>().sprite = null;
+            powerup.GetComponent<BoxCollider2D>().enabled = false;
+
+            //Restore the player's health to full
+            health = maxHealth;
         }
     }
 }

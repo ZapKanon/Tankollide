@@ -371,10 +371,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7c30cc5c8a75eb4ea0b41830b78ad44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
+  moveSpeed: 2
   rotateSpeed: 0
-  health: 50
-  maxHealth: 50
+  health: 30
+  maxHealth: 30
   fireRate: 0
   shotSpeed: 0
   team: 1
@@ -384,6 +384,7 @@ MonoBehaviour:
   shotRecharge: {fileID: 0}
   projectile: {fileID: 0}
   targetCharacter: {fileID: 0}
+  collisionDamage: 50
 --- !u!50 &5211344565720759465
 Rigidbody2D:
   serializedVersion: 4

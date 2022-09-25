@@ -6,6 +6,8 @@ using UnityEngine;
 //They do not fire shots, but heavily damage the player on contact by exploding.
 public class EnemyChaser : Enemy
 {
+    public float collisionDamage;
+
     new void Update()
     {
         base.Update();
@@ -21,5 +23,15 @@ public class EnemyChaser : Enemy
         Vector2 dir = tankRigidbody.velocity;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+    }
+
+    //Damage the target on collision, then explode
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.TryGetComponent(out Player player))
+        {
+            player.TakeDamage(collisionDamage);
+            gameObject.SetActive(false);
+        }
     }
 }
