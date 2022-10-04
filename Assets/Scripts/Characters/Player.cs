@@ -294,13 +294,34 @@ public class Player : Character
         mainCamera.GetComponent<CameraShake>().TriggerShake(damage);
     }
 
-    //Change paramters when powerups are picked up
+    //Change parameters when powerups are picked up
     public void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.TryGetComponent(out Powerup powerup))
         {
             switch (powerup.ID)
             {
+                //Menu Option - Enters Adventure Mode
+                case "Advent":
+                    //Move player to adventure mode spawn point
+                    transform.position = GameObject.Find("Adventure Spawn Point").transform.position;
+                    //TODO reset all adventure mode parameters
+                    break;
+
+                //Menu Option - Enters Survival Mode
+                case "Survive":
+                    //Move player to survival mode spawn point
+                    transform.position = GameObject.Find("Survival Spawn Point").transform.position;
+                    //TODO reset all survival mode parameters
+                    break;
+
+                //Menu Option - Return to Main Menu
+                case "Menu":
+                    //Move player to main menu spawn point
+                    transform.position = GameObject.Find("Menu Spawn Point").transform.position;
+                    //TODO reset all main menu parameters
+                    break;
+
                 //Passive - Quickens fire rate
                 case "FireRate":
                     normalFireRate -= 0.5f;
@@ -329,7 +350,7 @@ public class Player : Character
             }
 
             //Hide the powerup after obtaining, while keeping text visible
-            powerup.GetComponent<SpriteRenderer>().sprite = null;
+            powerup.GetComponentInChildren<SpriteRenderer>().sprite = null;
             powerup.GetComponent<BoxCollider2D>().enabled = false;
 
             //Restore the player's health to full

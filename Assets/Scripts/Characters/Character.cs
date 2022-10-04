@@ -32,8 +32,8 @@ public class Character : MonoBehaviour
         healthOrb = GetComponentInChildren<HealthOrb>().GetComponent<Image>();
         shotRecharge = GetComponentInChildren<ShotRecharge>().GetComponent<Image>();
 
-        //Able to fire a shot immediately after spawning
-        fireRateTimer = fireRate;
+        //NOT Able to fire a shot immediately after spawning
+        fireRateTimer = Random.Range(0, fireRate / 2);
     }
 
     // Update is called once per frame
@@ -45,7 +45,7 @@ public class Character : MonoBehaviour
     }
 
     //Freeze canvas rotation to keep health orb filling from bottom to top
-    private void LateUpdate()
+    protected void LateUpdate()
     {
         canvas.gameObject.transform.rotation = Quaternion.identity;
     }
